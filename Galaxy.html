@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Letter Value Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            color: #333;
+        }
+        h1 {
+            color: #007BFF;
+        }
+        form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            margin-right: 10px;
+        }
+        input[type="text"] {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 150px;
+        }
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007BFF;
+            color: #fff;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        p {
+            font-size: 18px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Galaxy Wholesale Rate Calculator</h1>
+    <form id="letterForm">
+        <label for="letters">Enter Letters:</label>
+        <input type="text" id="letters" name="letters" maxlength="10" required>
+        <button type="button" onclick="convertLetters()">Convert</button>
+    </form>
+    <p>Galaxy Wholesale Rate: <span id="result">0</span></p>
+
+    <script>
+        // Define letter values
+        const letterValues = {
+            's': 1,
+            'o': 2,
+            'u': 3,
+            'c': 4,
+            'e': 5,
+            'p': 6,
+            'a': 7,
+            'n': 8,
+            'g': 9,
+            'i': 0
+        };
+
+        function convertLetters() {
+            const input = document.getElementById('letters').value.toLowerCase();
+            let resultString = '';
+
+            for (let i = 0; i < input.length; i++) {
+                const letter = input[i];
+                resultString += letterValues.hasOwnProperty(letter) ? letterValues[letter] : '?'; // Handle unknown letters
+            }
+
+            document.getElementById('result').textContent = resultString || '0'; // Display '0' if input is empty
+        }
+    </script>
+</body>
+</html>
