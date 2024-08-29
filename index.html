@@ -8,6 +8,7 @@
         body {
             font-family: Arial, sans-serif;
             margin: 0;
+            padding: 20px;
             background-color: #f4f4f4;
             color: #333;
             display: flex;
@@ -60,11 +61,11 @@
             opacity: 0.8;
         }
         #open-camera {
-            background-color: #007BFF;
+            background-color: #007BFF; /* Blue */
             color: #fff;
         }
         #save {
-            background-color: #28a745;
+            background-color: #28a745; /* Green */
             color: #fff;
             display: none;
         }
@@ -80,8 +81,6 @@
         }
         #video {
             margin-bottom: 20px;
-            width: 100%;
-            height: auto;
         }
         #canvas {
             display: none;
@@ -117,22 +116,22 @@
             border: none;
         }
         .download-btn {
-            background-color: #28a745;
-            color: #fff;
             text-align: center;
+            background-color: #28a745; /* Green */
+            color: #fff;
         }
         .delete-btn {
-            background-color: #dc3545;
+            background-color: #dc3545; /* Red */
             color: #fff;
         }
         .download-btn:hover {
-            background-color: #218838;
+            background-color: #218838; /* Darker green */
         }
         .delete-btn:hover {
-            background-color: #c82333;
+            background-color: #c82333; /* Darker red */
         }
         .warning {
-            color: #dc3545;
+            color: #dc3545; /* Red */
             font-size: 16px;
             margin-top: 10px;
         }
@@ -172,7 +171,7 @@
         <button id="open-camera">Open Camera</button>
         <div class="warning" id="camera-warning" style="display: none;">Please enter a valid wholesale rate</div>
         <div class="camera-container">
-            <video id="video" autoplay></video>
+            <video id="video" width="320" height="240" autoplay></video>
             <button id="save">Save Image with Data</button>
         </div>
         <canvas id="canvas" width="320" height="240"></canvas>
@@ -244,8 +243,8 @@
         openCameraBtn.addEventListener('click', function() {
             const wholesaleRate = parseFloat(document.getElementById('result').textContent);
             if (wholesaleRate > 0) {
-                navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: { exact: "environment" } } 
+                navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: { exact: "environment" } } // Use back camera on mobile
                 })
                 .then(stream => {
                     video.srcObject = stream;
@@ -253,7 +252,6 @@
                 })
                 .catch(error => {
                     console.error('Error accessing camera:', error);
-                    alert('Unable to access camera. Please ensure permissions are granted.');
                 });
             } else {
                 document.getElementById('camera-warning').style.display = 'block';
@@ -261,51 +259,103 @@
         });
 
         saveBtn.addEventListener('click', function() {
-            const width = video.videoWidth;
-            const height = video.videoHeight;
-            canvas.width = width;
-            canvas.height = height;
-            context.drawImage(video, 0, 0, width, height);
+            // Draw the image from the video onto the canvas
+            context.drawImage(video, 0, 0, 320, 240);
+            context.font = "20px Arial";
+            context.fillStyle = "#fff";
+            context.fillRect(0, 0, canvas.width, 50); // Background for text
+            context.fillStyle = "#000";
+            context.fillText(`Wholesale Rate: ${document.getElementById('result').textContent}`, 10, 20);
+            context.fillText(`After Discount ${document.getElementById('discountPercentage').textContent} : ${document.getElementById('discountedRate').textContent}`, 10, 40);
 
-            const percentage = parseFloat(document.getElementById('discount').value);
-            const wholesaleRate = parseFloat(document.getElementById('result').textContent);
-            const discountedRate = wholesaleRate - (wholesaleRate * percentage / 100);
+            // Save the canvas image
+            const image = canvas.toDataURL('image/png');
 
-            const text = `Wholesale Rate: ${wholesaleRate}\nDiscounted Rate: ${discountedRate.toFixed(2)}%`;
+            // Store the image in local storage
+            const storedImages = JSON.parse(localStorage.getItem('capturedImages')) || [];
+            storedImages.push(image);
+            localStorage.setItem('capturedImages', JSON.stringify(storedImages));
 
-            context.font = '20px Arial'; // Increase font size
-            context.fillStyle = 'white';
-            context.textAlign = 'left';
-            context.fillText(text, 10, height - 30); // Adjust text position
+            // Display the image on top of the previously saved images
+            const imgWrapper = document.createElement('div');
+            const img = new Image();
+            img.src = image;
+            imgWrapper.appendChild(img);
 
-            const dataURL = canvas.toDataURL('image/png');
-            const img = document.createElement('img');
-            img.src = dataURL;
-            const downloadLink = document.createElement('a');
-            downloadLink.href = dataURL;
-            downloadLink.download = 'captured-image.png';
-            downloadLink.classList.add('download-btn');
-            downloadLink.textContent = 'Download Image';
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'image-options';
+
             const deleteBtn = document.createElement('button');
-            deleteBtn.classList.add('delete-btn');
-            deleteBtn.textContent = 'Delete Image';
-            deleteBtn.addEventListener('click', function() {
-                capturedImagesContainer.removeChild(img);
-                capturedImagesContainer.removeChild(downloadLink);
-                capturedImagesContainer.removeChild(deleteBtn);
-            });
-            capturedImagesContainer.appendChild(img);
-            capturedImagesContainer.appendChild(downloadLink);
-            capturedImagesContainer.appendChild(deleteBtn);
+            deleteBtn.textContent = 'Delete';
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.onclick = function() {
+                // Remove image from local storage and UI
+                const imgIndex = storedImages.indexOf(image);
+                if (imgIndex > -1) {
+                    storedImages.splice(imgIndex, 1);
+                    localStorage.setItem('capturedImages', JSON.stringify(storedImages));
+                }
+                imgWrapper.remove();
+            };
 
-            // Stop the video stream
-            if (video.srcObject) {
-                let stream = video.srcObject;
-                let tracks = stream.getTracks();
-                tracks.forEach(track => track.stop());
-                video.srcObject = null;
-            }
+            const downloadLink = document.createElement('a');
+            downloadLink.href = image;
+            downloadLink.download = 'GALAXY.png';
+            downloadLink.textContent = 'Download';
+            downloadLink.className = 'download-btn';
+
+            optionsDiv.appendChild(downloadLink);
+            optionsDiv.appendChild(deleteBtn);
+
+            imgWrapper.appendChild(optionsDiv);
+
+            // Prepend new image to the container
+            capturedImagesContainer.insertBefore(imgWrapper, capturedImagesContainer.firstChild);
         });
+
+        // Load previously saved images from local storage
+        function loadSavedImages() {
+            const savedImages = JSON.parse(localStorage.getItem('capturedImages')) || [];
+            savedImages.forEach(image => {
+                const imgWrapper = document.createElement('div');
+                const img = new Image();
+                img.src = image;
+                imgWrapper.appendChild(img);
+
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'image-options';
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.onclick = function() {
+                    // Remove image from local storage and UI
+                    const imgIndex = savedImages.indexOf(image);
+                    if (imgIndex > -1) {
+                        savedImages.splice(imgIndex, 1);
+                        localStorage.setItem('capturedImages', JSON.stringify(savedImages));
+                    }
+                    imgWrapper.remove();
+                };
+
+                const downloadLink = document.createElement('a');
+                downloadLink.href = image;
+                downloadLink.download = 'GALAXY.png';
+                downloadLink.textContent = 'Download';
+                downloadLink.className = 'download-btn';
+
+                optionsDiv.appendChild(downloadLink);
+                optionsDiv.appendChild(deleteBtn);
+
+                imgWrapper.appendChild(optionsDiv);
+
+                // Prepend existing images to the container
+                capturedImagesContainer.appendChild(imgWrapper);
+            });
+        }
+
+        // Initialize the page with saved images
+        loadSavedImages();
     </script>
 </body>
 </html>
