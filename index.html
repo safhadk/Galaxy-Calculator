@@ -3,67 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Letter Value Converter</title>
+    <title>Galaxy Wholesale Rate Calculator with Image Capture</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            padding: 0;
+            padding: 20px;
             background-color: #f4f4f4;
+            color: #333;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
-            color: #333;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            box-sizing: border-box;
+            text-align: center;
+            position: relative;
         }
         h1 {
             color: #007BFF;
-        }
-        form {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
         }
         label {
-            margin-right: 10px;
+            display: block;
+            font-size: 16px;
+            margin-bottom: 5px;
+            text-align: left;
         }
-        input[type="text"] {
-            padding: 8px;
+        input[type="text"], select {
+            padding: 10px;
             border: 1px solid #ddd;
-            border-radius: 4px;
-            width: 150px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
         }
         button {
-            padding: 8px 16px;
+            padding: 10px;
             border: none;
-            border-radius: 4px;
-            background-color: #007BFF;
-            color: #fff;
-            cursor: pointer;
+            border-radius: 5px;
             font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
         }
         button:hover {
-            background-color: #0056b3;
+            opacity: 0.8;
         }
-        p {
+        #open-camera {
+            background-color: #007BFF; /* Blue */
+            color: #fff;
+        }
+        #save {
+            background-color: #28a745; /* Green */
+            color: #fff;
+            display: none;
+        }
+        .result-container p {
             font-size: 18px;
+            margin: 10px 0;
+        }
+        .camera-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             margin-top: 20px;
+        }
+        #video {
+            margin-bottom: 20px;
+        }
+        #canvas {
+            display: none;
+        }
+        .captured-images {
+            margin-top: 20px;
+            text-align: left;
+            width: 100%;
+        }
+        .captured-images img {
+            margin: 10px 0;
+            max-width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .image-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 5px;
+        }
+        .image-options button, .image-options a {
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            width: 48%;
+            margin: 1%;
+            box-sizing: border-box;
+        }
+        .image-options button {
+            border: none;
+        }
+        .download-btn {
+            text-align: center;
+            background-color: #28a745; /* Green */
+            color: #fff;
+        }
+        .delete-btn {
+            background-color: #dc3545; /* Red */
+            color: #fff;
+        }
+        .download-btn:hover {
+            background-color: #218838; /* Darker green */
+        }
+        .delete-btn:hover {
+            background-color: #c82333; /* Darker red */
+        }
+        .warning {
+            color: #dc3545; /* Red */
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        @media (max-width: 600px) {
+            .container {
+                width: 90%;
+            }
+            .image-options {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .image-options button, .image-options a {
+                width: 100%;
+                margin-top: 5px;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Galaxy Wholesale Rate Calculator</h1>
-    <form id="letterForm">
-        <label for="letters">Enter Letters:</label>
-        <input type="text" id="letters" name="letters" maxlength="10" required>
-        <button type="button" onclick="convertLetters()">Convert</button>
-    </form>
-    <p>Galaxy Wholesale Rate: <span id="result">0</span></p>
+    <div class="container">
+        <h1>Galaxy Wholesale Rate Calculator</h1>
+        <form id="letterForm">
+            <label for="letters">Enter Letters:</label>
+            <input type="text" id="letters" name="letters" maxlength="10" required>
+            <label for="discount">Select Discount Percentage:</label>
+            <select id="discount" name="discount">
+                <option value="5">5%</option>
+                <option value="10">10%</option>
+                <option value="15">15%</option>
+                <option value="20">20%</option>
+            </select>
+        </form>
+        <div class="result-container">
+            <p>Galaxy Wholesale Rate: <span id="result">0</span></p>
+            <p>Amount after Discount (<span id="discountPercentage" style="color: #28a745;">5%</span>): <span id="discountedRate">0</span></p>
+        </div>
+        <button id="open-camera">Open Camera</button>
+        <div class="warning" id="camera-warning" style="display: none;">Please enter a valid wholesale rate</div>
+        <div class="camera-container">
+            <video id="video" width="320" height="240" autoplay></video>
+            <button id="save">Save Image with Data</button>
+        </div>
+        <canvas id="canvas" width="320" height="240"></canvas>
+        <div class="captured-images" id="capturedImages"></div>
+    </div>
 
     <script>
-        // Define letter values
         const letterValues = {
             's': 1,
             'o': 2,
@@ -83,11 +198,162 @@
 
             for (let i = 0; i < input.length; i++) {
                 const letter = input[i];
-                resultString += letterValues.hasOwnProperty(letter) ? letterValues[letter] : '?'; // Handle unknown letters
+                resultString += letterValues[letter] !== undefined ? letterValues[letter] : '?'; // Handle unknown letters
             }
 
             document.getElementById('result').textContent = resultString || '0'; // Display '0' if input is empty
+
+            // Get the selected discount percentage
+            const discountPercentage = parseFloat(document.getElementById('discount').value);
+            document.getElementById('discountPercentage').textContent = discountPercentage + '%';
+
+            // Calculate the discounted amount
+            const wholesaleRate = parseFloat(resultString) || 0;
+            const discountedAmount = wholesaleRate - (wholesaleRate * discountPercentage / 100);
+            
+            document.getElementById('discountedRate').textContent = discountedAmount.toFixed(2);
+
+            // Enable or disable the Open Camera button based on the wholesale rate
+            const openCameraBtn = document.getElementById('open-camera');
+            const cameraWarning = document.getElementById('camera-warning');
+            if (wholesaleRate > 0) {
+                openCameraBtn.disabled = false;
+                openCameraBtn.style.backgroundColor = '#007BFF'; // Blue
+                openCameraBtn.style.color = '#fff';
+                cameraWarning.style.display = 'none';
+            } else {
+                openCameraBtn.disabled = true;
+                openCameraBtn.style.backgroundColor = '#d6d6d6'; // Gray
+                openCameraBtn.style.color = '#a1a1a1';
+                cameraWarning.style.display = 'block';
+            }
         }
+
+        document.getElementById('letters').addEventListener('input', convertLetters);
+        document.getElementById('discount').addEventListener('change', convertLetters);
+
+        // Camera and image capture
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const openCameraBtn = document.getElementById('open-camera');
+        const saveBtn = document.getElementById('save');
+        const capturedImagesContainer = document.getElementById('capturedImages');
+        let context = canvas.getContext('2d');
+
+        openCameraBtn.addEventListener('click', function() {
+            const wholesaleRate = parseFloat(document.getElementById('result').textContent);
+            if (wholesaleRate > 0) {
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(stream => {
+                        video.srcObject = stream;
+                        saveBtn.style.display = 'block'; // Show the save button after opening the camera
+                    })
+                    .catch(error => {
+                        console.error('Error accessing camera:', error);
+                    });
+            } else {
+                document.getElementById('camera-warning').style.display = 'block';
+            }
+        });
+
+        saveBtn.addEventListener('click', function() {
+            // Draw the image from the video onto the canvas
+            context.drawImage(video, 0, 0, 320, 240);
+            context.font = "20px Arial";
+            context.fillStyle = "#fff";
+            context.fillRect(0, 0, canvas.width, 50); // Background for text
+            context.fillStyle = "#000";
+            context.fillText(`Wholesale Rate: ${document.getElementById('result').textContent}`, 10, 20);
+            context.fillText(`After Discount ${document.getElementById('discountPercentage').textContent} : ${document.getElementById('discountedRate').textContent}`, 10, 40);
+
+            // Save the canvas image
+            const image = canvas.toDataURL('image/png');
+
+            // Store the image in local storage
+            const storedImages = JSON.parse(localStorage.getItem('capturedImages')) || [];
+            storedImages.push(image);
+            localStorage.setItem('capturedImages', JSON.stringify(storedImages));
+
+            // Display the image on top of the previously saved images
+            const imgWrapper = document.createElement('div');
+            const img = new Image();
+            img.src = image;
+            imgWrapper.appendChild(img);
+
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'image-options';
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = 'Delete';
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.onclick = function() {
+                // Remove image from local storage and UI
+                const imgIndex = storedImages.indexOf(image);
+                if (imgIndex > -1) {
+                    storedImages.splice(imgIndex, 1);
+                    localStorage.setItem('capturedImages', JSON.stringify(storedImages));
+                }
+                imgWrapper.remove();
+            };
+
+            const downloadLink = document.createElement('a');
+            downloadLink.href = image;
+            downloadLink.download = 'GALAXY.png';
+            downloadLink.textContent = 'Download';
+            downloadLink.className = 'download-btn';
+
+            optionsDiv.appendChild(downloadLink);
+            optionsDiv.appendChild(deleteBtn);
+
+            imgWrapper.appendChild(optionsDiv);
+
+            // Prepend new image to the container
+            capturedImagesContainer.insertBefore(imgWrapper, capturedImagesContainer.firstChild);
+        });
+
+        // Load previously saved images from local storage
+        function loadSavedImages() {
+            const savedImages = JSON.parse(localStorage.getItem('capturedImages')) || [];
+            savedImages.forEach(image => {
+                const imgWrapper = document.createElement('div');
+                const img = new Image();
+                img.src = image;
+                imgWrapper.appendChild(img);
+
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'image-options';
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.onclick = function() {
+                    // Remove image from local storage and UI
+                    const imgIndex = savedImages.indexOf(image);
+                    if (imgIndex > -1) {
+                        savedImages.splice(imgIndex, 1);
+                        localStorage.setItem('capturedImages', JSON.stringify(savedImages));
+                    }
+                    imgWrapper.remove();
+                };
+
+                const downloadLink = document.createElement('a');
+                downloadLink.href = image;
+                downloadLink.download = 'GALAXY.png';
+                downloadLink.textContent = 'Download';
+                downloadLink.className = 'download-btn';
+
+                optionsDiv.appendChild(downloadLink);
+                optionsDiv.appendChild(deleteBtn);
+
+                imgWrapper.appendChild(optionsDiv);
+
+                // Prepend existing images to the container
+                capturedImagesContainer.appendChild(imgWrapper);
+            });
+        }
+
+        // Initialize the page with saved images
+        loadSavedImages();
     </script>
 </body>
 </html>
