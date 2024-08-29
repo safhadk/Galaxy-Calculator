@@ -8,7 +8,6 @@
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            /* padding: 10px; */
             background-color: #f4f4f4;
             color: #333;
             display: flex;
@@ -61,11 +60,11 @@
             opacity: 0.8;
         }
         #open-camera {
-            background-color: #007BFF; /* Blue */
+            background-color: #007BFF;
             color: #fff;
         }
         #save {
-            background-color: #28a745; /* Green */
+            background-color: #28a745;
             color: #fff;
             display: none;
         }
@@ -118,22 +117,22 @@
             border: none;
         }
         .download-btn {
-            text-align: center;
-            background-color: #28a745; /* Green */
+            background-color: #28a745;
             color: #fff;
+            text-align: center;
         }
         .delete-btn {
-            background-color: #dc3545; /* Red */
+            background-color: #dc3545;
             color: #fff;
         }
         .download-btn:hover {
-            background-color: #218838; /* Darker green */
+            background-color: #218838;
         }
         .delete-btn:hover {
-            background-color: #c82333; /* Darker red */
+            background-color: #c82333;
         }
         .warning {
-            color: #dc3545; /* Red */
+            color: #dc3545;
             font-size: 16px;
             margin-top: 10px;
         }
@@ -274,10 +273,10 @@
 
             const text = `Wholesale Rate: ${wholesaleRate}\nDiscounted Rate: ${discountedRate.toFixed(2)}%`;
 
-            context.font = '16px Arial';
+            context.font = '20px Arial'; // Increase font size
             context.fillStyle = 'white';
             context.textAlign = 'left';
-            context.fillText(text, 10, height - 20);
+            context.fillText(text, 10, height - 30); // Adjust text position
 
             const dataURL = canvas.toDataURL('image/png');
             const img = document.createElement('img');
